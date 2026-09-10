@@ -1,11 +1,15 @@
 services:
   apex:
-    build: axiom-apex
+    image: axiom-portfolio:local
+    build:
+      context: ..
+      dockerfile: axiom-ason/Dockerfile
+    command: ["apex", "serve", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      APEX_API_KEY: ${APEX_API_KEY:-}
+      APEX_API_KEY: ${APEX_API_KEY:?Set APEX_API_KEY before starting the stack}
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - apex_data:/root/.apex
     healthcheck:
@@ -15,11 +19,15 @@ services:
       retries: 5
 
   ason:
+    image: axiom-portfolio:local
+    profiles: ["tools"]
+    entrypoint: ["ason"]
+    command: []
     build:
-      context: .
+      context: ..
       dockerfile: axiom-ason/Dockerfile
     environment:
-      APEX_API_KEY: ${APEX_API_KEY:-}
+      APEX_API_KEY: ${APEX_API_KEY:?Set APEX_API_KEY before starting the stack}
       APEX_URL: http://apex:8080
     depends_on:
       apex:
