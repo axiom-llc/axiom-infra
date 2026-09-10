@@ -20,26 +20,48 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: axiom-infra
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-rag
           path: axiom-rag
+          ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_RAG_DEPLOY_KEY }}
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-apex
           path: axiom-apex
+          ref: main
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-ason
           path: axiom-ason
+          ref: main
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-api
           path: axiom-api
+          ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_API_DEPLOY_KEY }}
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-demos
           path: axiom-demos
+          ref: main
+          persist-credentials: false
+      - name: Record validated revisions and verify credential cleanup
+        run: |
+          for repo in axiom-infra axiom-rag axiom-apex axiom-ason axiom-api axiom-demos; do
+            echo "$repo $(git -C "$repo" rev-parse HEAD)"
+            if git -C "$repo" config --local --name-only --get-regexp 'core\.sshcommand|http\..*\.extraheader'; then
+              echo "::error::Checkout credentials remain configured in $repo"
+              exit 1
+            fi
+          done
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
