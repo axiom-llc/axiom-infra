@@ -1,60 +1,129 @@
+
 # AXIOM local portfolio stack
 
-Use sibling checkouts of `axiom-infra`, `axiom-rag`, `axiom-apex`, and
-`axiom-ason`. Compose builds one shared image from the ASON Dockerfile using
-all three local Python packages, so unpublished matching versions work together.
-The Dockerfile-specific ignore file allows only package source and build metadata
-into the build context, excluding local credentials, Git history, and archives.
+`axiom-infra` provides the local Docker Compose integration stack and
+cross-repository portfolio validation workflow for AXIOM RAG, APEX, ASON, API,
+and demos.
 
-From this directory:
+## Repository layout
 
-```sh
+```text
+axiom-infra/
+├── .env.example
+├── .github/workflows/portfolio.yml
+├── docker-compose.yml
+└── README.md
+```
+
+The Compose build expects sibling checkouts under one parent directory:
+
+```text
+axiom-llc/
+├── axiom-infra/
+├── axiom-rag/
+├── axiom-apex/
+├── axiom-ason/
+├── axiom-api/
+└── axiom-demos/
+```
+
+The local image is built from `axiom-ason/Dockerfile` using the matching sibling
+RAG, APEX, and ASON packages.
+
+## Configure
+
+From `axiom-infra`:
+
+```bash
 cp .env.example .env
-# Set GEMINI_API_KEY and a non-empty APEX_API_KEY in .env.
+```
+
+Set `GEMINI_API_KEY` and a non-empty `APEX_API_KEY` in `.env`.
+
+Validate the resolved Compose configuration:
+
+```bash
 docker compose config --quiet
+```
+
+## Run
+
+Start APEX:
+
+```bash
 docker compose up --build -d apex
+```
+
+APEX is published at `127.0.0.1:8080`, requires `X-Apex-Key`, and stores
+history/memory in the `apex_data` volume.
+
+Submit an ASON plan through the on-demand tools profile:
+
+```bash
 cat plan.json | docker compose run --rm -T ason submit -
 ```
 
-APEX is published on `127.0.0.1:8080`, requires `X-Apex-Key`, and persists
-history/memory in `apex_data`. ASON is an on-demand CLI in the `tools` profile,
-not an idle daemon. It reads `APEX_URL=http://apex:8080` and shares the API key.
-The optional `--apex-url` CLI argument overrides that environment variable.
+ASON uses:
 
-Use `docker compose down` to stop the stack without deleting its data volume.
+```text
+APEX_URL=http://apex:8080
+```
 
-The `Portfolio validation` GitHub workflow checks the current runtime, policy,
-retrieval, HTTP-client, and demo repositories daily and on demand. It builds and
-installs matching wheels, runs each repository's offline tests in its own process,
-checks installed entry points outside the source trees, and exercises Compose
-with an empty ASON plan. Live-provider benchmarks remain separate.
+and shares the configured APEX API key.
 
-## Private dependency access
+Stop the stack without deleting persistent data:
 
-The portfolio workflow reads the current `main` branches of its dependencies.
-`axiom-rag` and `axiom-api` are private; the default `GITHUB_TOKEN` only grants
-access to this repository. Each private dependency has one dedicated **read-only
-deploy key**, with the private half stored only in this repository's Actions secrets:
+```bash
+docker compose down
+```
 
-| Dependency | Actions secret in `axiom-infra` |
-| --- | --- |
-| `axiom-llc/axiom-rag` | `PORTFOLIO_RAG_DEPLOY_KEY` |
-| `axiom-llc/axiom-api` | `PORTFOLIO_API_DEPLOY_KEY` |
+## Current service boundary
 
-The keys cannot write or access another repository. Checkouts use strict SSH host
-verification and `persist-credentials: false`, removing credentials before any
-repository code runs. The workflow records all checked-out commits in its log.
-Secrets are unavailable to fork pull requests; those runs cannot validate private
-dependencies and must be rerun from a reviewed branch in this repository.
+The current Compose file runs APEX and on-demand ASON. It does not run a
+separate `axiom-rag` HTTP service.
 
-Deploy keys do not expire automatically. To rotate one, register a new read-only
-key on its dependency, replace the matching Actions secret, validate a workflow
-run, then delete the old deploy key. To revoke access immediately, delete that
-dependency's deploy key and the matching secret. Never commit private keys or
-include them in logs or artifacts.
+RAG 1.4.0 provides a protected HTTP storage compatibility API, but CLI/APEX
+storage adapters have not yet migrated to it. Deployment mapping and migration
+are separate follow-up work; this Compose stack must not be treated as having
+completed that migration.
 
-This uses existing repository administration without granting organization-wide
-permissions or storing a personal token. A GitHub App with read-only Contents
-access to these two repositories is the alternative if organization App
-administration becomes available; it provides short-lived installation tokens
-but still requires protecting and rotating its signing key.
+## Portfolio CI
+
+`.github/workflows/portfolio.yml` runs:
+
+* on pushes and pull requests;
+* manually through `workflow_dispatch`;
+* daily on its configured schedule;
+* on Python 3.11 and 3.12.
+
+The workflow checks out:
+
+* `axiom-infra`;
+* `axiom-rag`;
+* `axiom-apex`;
+* `axiom-ason`;
+* `axiom-api`;
+* `axiom-demos`.
+
+It records the exact checked-out revisions, builds matching package wheels,
+installs them together, runs each repository's offline tests in a separate
+process, verifies installed entry points outside source trees, and exercises the
+local Compose integration with an empty ASON plan.
+
+All listed AXIOM repositories are currently public. The workflow still
+references read-only deploy-key secrets for the RAG and API checkouts and
+removes checkout credentials before repository code executes. Those credential
+references are current workflow state, not a repository-visibility requirement.
+Removing them requires a separate workflow change and validation.
+
+## Local validation
+
+```bash
+docker compose config --quiet
+docker compose up --build --wait apex
+cat plan.json | docker compose run --rm -T ason submit -
+docker compose down
+git diff --check
+```
+
+Live-provider benchmarks are intentionally outside the portfolio workflow.
