@@ -82,10 +82,10 @@ docker compose down
 The current Compose file runs APEX and on-demand ASON. It does not run a
 separate `axiom-rag` HTTP service.
 
-RAG 1.4.0 provides a protected HTTP storage compatibility API, but CLI/APEX
-storage adapters have not yet migrated to it. Deployment mapping and migration
-are separate follow-up work; this Compose stack must not be treated as having
-completed that migration.
+RAG 1.5.0 (unreleased) migrates CLI/APEX storage adapters to the protected HTTP
+API for the explicit host-local mapping. This Compose stack remains unchanged:
+it does not provide the RAG service or container connectivity to the host-loopback
+target. Container deployment requires separate configuration and validation.
 
 ## Portfolio CI
 
