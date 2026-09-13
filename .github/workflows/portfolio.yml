@@ -70,6 +70,7 @@ jobs:
           python -m pip install setuptools wheel pytest responses
           python -m pip wheel --no-deps --no-build-isolation -w wheelhouse ./axiom-rag ./axiom-apex ./axiom-ason ./axiom-api
           python -m pip install wheelhouse/*.whl
+          python -m pip install -r ./axiom-demos/voice-agent/requirements.txt
       - name: Test each repository in its own process
         run: |
           (cd axiom-rag && python -m pytest tests -q)
