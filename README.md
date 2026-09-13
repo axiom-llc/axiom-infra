@@ -126,11 +126,10 @@ local Compose integration with an empty ASON plan. APEX tests marked
 `host_isolation` are excluded here; APEX CI owns those probes and configures
 Bubblewrap and delegated systemd/cgroup resource controllers.
 
-All listed AXIOM repositories are currently public. The workflow still
-references read-only deploy-key secrets for the RAG and API checkouts and
-removes checkout credentials before repository code executes. Those credential
-references are current workflow state, not a repository-visibility requirement.
-Removing them requires a separate workflow change and validation.
+The workflow treats checkout credentials as a boundary: it removes checkout
+credentials before repository code executes. Repository visibility and any
+checkout-authentication configuration are workflow concerns, not a requirement
+of the local Compose stack.
 
 ## Local validation
 
