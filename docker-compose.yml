@@ -1,4 +1,28 @@
 services:
+  rag:
+    image: axiom-portfolio:local
+    build:
+      context: ..
+      dockerfile: axiom-ason/Dockerfile
+    command: ["python", "-m", "server.app"]
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      RAG_HOST: 0.0.0.0
+      RAG_API_TOKEN: ${RAG_API_TOKEN:?Set RAG_API_TOKEN before starting the stack}
+      RAG_CHROMA_PATH: /root/.rag/chroma
+      RAG_COLLECTION: documents-gemini-embedding-2
+      RAG_EMBEDDING_MODEL: gemini-embedding-2
+      RAG_EMBEDDING_DIMENSION: "3072"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - rag_data:/root/.rag/chroma
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import json, os, urllib.request; request = urllib.request.Request('http://127.0.0.1:8000/v1/inspect', data=json.dumps({'namespace': 'documents-gemini-embedding-2'}).encode(), headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + os.environ['RAG_API_TOKEN']}, method='POST'); assert json.load(urllib.request.urlopen(request, timeout=3))['namespace'] == 'documents-gemini-embedding-2'\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   apex:
     image: axiom-portfolio:local
     build:
@@ -6,12 +30,22 @@ services:
       dockerfile: axiom-ason/Dockerfile
     command: ["apex", "serve", "--host", "0.0.0.0", "--port", "8080"]
     environment:
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
       APEX_API_KEY: ${APEX_API_KEY:?Set APEX_API_KEY before starting the stack}
+      # RAG storage calls need no local provider; configure an APEX provider explicitly when used.
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      RAG_BASE_URL: http://rag:8000
+      RAG_API_TOKEN: ${RAG_API_TOKEN:?Set RAG_API_TOKEN before starting the stack}
+      RAG_CHROMA_PATH: /root/.rag/chroma
+      RAG_COLLECTION: documents-gemini-embedding-2
+      RAG_EMBEDDING_MODEL: gemini-embedding-2
+      RAG_EMBEDDING_DIMENSION: "3072"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
       - apex_data:/root/.apex
+    depends_on:
+      rag:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
       interval: 10s
@@ -34,4 +68,5 @@ services:
         condition: service_healthy
 
 volumes:
+  rag_data:
   apex_data:

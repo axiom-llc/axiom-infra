@@ -91,6 +91,7 @@ jobs:
         env:
           GEMINI_API_KEY: offline-validation-only
           APEX_API_KEY: offline-validation-only
+          RAG_API_TOKEN: offline-validation-only
         run: |
           docker compose config --quiet
           docker compose up --build --wait apex
@@ -100,4 +101,5 @@ jobs:
         working-directory: axiom-infra
         env:
           APEX_API_KEY: offline-validation-only
+          RAG_API_TOKEN: offline-validation-only
         run: docker compose down
