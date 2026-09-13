@@ -73,7 +73,7 @@ jobs:
       - name: Test each repository in its own process
         run: |
           (cd axiom-rag && python -m pytest tests -q)
-          (cd axiom-apex && python -m pytest tests -m 'not integration' -q)
+          (cd axiom-apex && python -m pytest tests -m 'not integration and not host_isolation' -q)
           (cd axiom-ason && python -m pytest ason/tests -q)
           (cd axiom-api && python -m pytest tests -q)
           (cd axiom-demos && python -m pytest tests -q)

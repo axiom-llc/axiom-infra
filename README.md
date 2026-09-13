@@ -108,7 +108,9 @@ The workflow checks out:
 It records the exact checked-out revisions, builds matching package wheels,
 installs them together, runs each repository's offline tests in a separate
 process, verifies installed entry points outside source trees, and exercises the
-local Compose integration with an empty ASON plan.
+local Compose integration with an empty ASON plan. APEX tests marked
+`host_isolation` are excluded here; APEX CI owns those probes and configures
+Bubblewrap and delegated systemd/cgroup resource controllers.
 
 All listed AXIOM repositories are currently public. The workflow still
 references read-only deploy-key secrets for the RAG and API checkouts and
