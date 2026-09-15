@@ -142,3 +142,7 @@ git diff --check
 ```
 
 Live-provider benchmarks are intentionally outside the portfolio workflow.
+
+## Optional remote operator access
+
+Remote host access through Desktop Commander Remote MCP is optional infrastructure only. It may be used for explicit operator-authorized cross-repository inspection, testing, diagnostics, and maintenance, but no AXIOM runtime or CI path depends on it. See [REMOTE_MCP.md](REMOTE_MCP.md) for the trust boundary and rejected coupling.
