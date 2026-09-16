@@ -146,3 +146,7 @@ Live-provider benchmarks are intentionally outside the portfolio workflow.
 ## Optional remote operator access
 
 Remote host access through Desktop Commander Remote MCP is optional infrastructure only. It may be used for explicit operator-authorized cross-repository inspection, testing, diagnostics, and maintenance, but no AXIOM runtime or CI path depends on it. See [REMOTE_MCP.md](REMOTE_MCP.md) for the trust boundary and rejected coupling.
+
+## Canonical portfolio validation receipt
+
+Run `python portfolio_receipt.py` from this repository to execute the registered local checks across RAG, APEX, ASON, API, Demos, Ops, Harness, and Research. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt applies only to the recorded revisions/checks and is not a deployment or external certification.
