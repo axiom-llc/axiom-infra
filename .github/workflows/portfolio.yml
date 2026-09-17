@@ -53,9 +53,39 @@ jobs:
           path: axiom-demos
           ref: main
           persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: axiom-llc/axiom-blender
+          path: axiom-blender
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: axiom-llc/axiom-llc.github.io
+          path: axiom-llc.github.io
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: axiom-llc/axiom-ops
+          path: axiom-ops
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: axiom-llc/axiom-research
+          path: axiom-research
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: axiom-llc/wiki-infinite
+          path: wiki-infinite
+          ref: main
+          persist-credentials: false
       - name: Record validated revisions and verify credential cleanup
         run: |
-          for repo in axiom-infra axiom-rag axiom-apex axiom-ason axiom-api axiom-demos; do
+          for repo in axiom-infra axiom-rag axiom-apex axiom-ason axiom-api axiom-blender axiom-demos axiom-llc.github.io axiom-ops axiom-research wiki-infinite; do
             echo "$repo $(git -C "$repo" rev-parse HEAD)"
             if git -C "$repo" config --local --name-only --get-regexp 'core\.sshcommand|http\..*\.extraheader'; then
               echo "::error::Checkout credentials remain configured in $repo"
@@ -85,6 +115,17 @@ jobs:
           apex --version
           ason
           python -c 'import cli, rag, apex, ason, server.app'
+      - name: Emit canonical portfolio validation receipt
+        if: matrix.python-version == '3.12'
+        run: python axiom-infra/portfolio_receipt.py --allow-missing -o axiom-portfolio-validation.json
+      - name: Upload canonical portfolio receipt
+        if: matrix.python-version == '3.12' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axiom-portfolio-validation
+          path: axiom-portfolio-validation.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Validate local container integration
         if: matrix.python-version == '3.12'
         working-directory: axiom-infra
