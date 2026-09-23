@@ -79,13 +79,13 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          repository: axiom-llc/wiki-infinite
-          path: wiki-infinite
+          repository: axiom-llc/axiom-wiki-infinite
+          path: axiom-wiki-infinite
           ref: main
           persist-credentials: false
       - name: Record validated revisions and verify credential cleanup
         run: |
-          for repo in axiom-infra axiom-rag axiom-apex axiom-ason axiom-api axiom-blender axiom-demos axiom-llc.github.io axiom-ops axiom-research wiki-infinite; do
+          for repo in axiom-infra axiom-rag axiom-apex axiom-ason axiom-api axiom-blender axiom-demos axiom-llc.github.io axiom-ops axiom-research axiom-wiki-infinite; do
             echo "$repo $(git -C "$repo" rev-parse HEAD)"
             if git -C "$repo" config --local --name-only --get-regexp 'core\.sshcommand|http\..*\.extraheader'; then
               echo "::error::Checkout credentials remain configured in $repo"

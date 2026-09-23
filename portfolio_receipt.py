@@ -7,7 +7,7 @@ HERE=Path(__file__).resolve().parent
 ROOT=HERE.parent
 ACTIVE=(
  'axiom-apex','axiom-api','axiom-ason','axiom-blender','axiom-demos','axiom-director',
- 'axiom-harness','axiom-infra','axiom-llc.github.io','axiom-ops','axiom-rag','axiom-research','wiki-infinite',
+ 'axiom-harness','axiom-infra','axiom-llc.github.io','axiom-ops','axiom-rag','axiom-research','axiom-wiki-infinite',
 )
 CHECKS={
  'axiom-rag':[['python','-m','pytest','tests','-q']],
@@ -22,14 +22,14 @@ CHECKS={
  'axiom-llc.github.io':[['python','-m','unittest','discover','-s','tests','-v']],
  'axiom-ops':[['make','test']],
  'axiom-research':[['python','architecture/tests/check.py']],
- 'wiki-infinite':[['python','-m','unittest','-v','tests/test_browser.py']],
+ 'axiom-wiki-infinite':[['python','-m','unittest','-v','tests/test_browser.py']],
 }
 def checks_for(name):
     if name=='axiom-api' and importlib.util.find_spec('responses') is None:
         return [['python','-m','compileall','-q','api_framework','gemini_client','tests'],['python','-c','from api_framework import APIClient; from gemini_client import GeminiClient']], 'partial', "dev-only dependency 'responses' unavailable; pytest not re-run"
     if name=='axiom-blender' and shutil.which('blender') is None:
         return [['python','-m','py_compile','scene.py'],['python','-c','import json; json.load(open("scene.example.json"))']], 'partial', 'Blender executable unavailable; headless render regression not run'
-    if name=='wiki-infinite' and not (shutil.which('chromium') or shutil.which('chromium-browser')):
+    if name=='axiom-wiki-infinite' and not (shutil.which('chromium') or shutil.which('chromium-browser')):
         return CHECKS[name], 'partial', 'Chromium unavailable; browser regression is expected to skip'
     return CHECKS[name], 'full', None
 def run(cmd,cwd):
