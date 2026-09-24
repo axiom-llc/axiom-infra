@@ -22,7 +22,9 @@ def run():
     plan={'plan':{'steps':[{'tool':'write_file','args':{'path':'/tmp/axiom-core-stack.txt','content':'core-stack-reference'}},{'tool':'read_file','args':{'path':'/tmp/axiom-core-stack.txt'}}]}}
     cp=subprocess.run(['docker','compose','run','--rm','-T','ason','submit','-','--authority-ref','core-stack:offline-reference'],cwd=HERE,input=json.dumps(plan),text=True,capture_output=True)
     if cp.returncode: raise RuntimeError(cp.stderr or cp.stdout)
-    submitted=json.loads(cp.stdout); response=submitted['apex_response']; auth=submitted['authorization']; detail=get(f"http://127.0.0.1:8080/runs/{response['run_id']}",{'X-Apex-Key':apex_key})
+    submitted=json.loads(cp.stdout); response=submitted.get('apex_response'); auth=submitted.get('authorization')
+    if submitted.get('accepted') is not True or not response or response.get('exit_code') != 0 or not auth: raise RuntimeError('ASON/APEX execution did not complete successfully')
+    detail=get(f"http://127.0.0.1:8080/runs/{response['run_id']}",{'X-Apex-Key':apex_key})
     if detail.get('authorization')!=auth or detail.get('ledger',{}).get('plan_digest')!=auth.get('approved_plan_digest'): raise RuntimeError('durable authorization binding mismatch')
     result={'schema':'axiom-core-stack/reference-v1','status':'PASS','repositories':revisions(),'rag':{'namespace':inspect.get('namespace'),'exists':inspect.get('exists')},'apex':{'run_id':response['run_id'],'status':response['status'],'plan_digest':auth['approved_plan_digest']},'authorization':{'authorization_id':auth['authorization_id'],'authority_ref':auth['authority_ref'],'policy_digest_or_ref':auth['policy_digest_or_ref']}}
     result['evidence_sha256']=hashlib.sha256(json.dumps(result,sort_keys=True,separators=(',',':')).encode()).hexdigest(); return result
