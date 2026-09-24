@@ -1,0 +1,28 @@
+{
+  "schema": "axiom-release-compatibility/v1",
+  "release_set": "core-2026-09",
+  "publication_authorized": false,
+  "order": [
+    "axiom-rag",
+    "axiom-apex",
+    "axiom-ason"
+  ],
+  "packages": {
+    "axiom-rag": {
+      "version": "1.5.0"
+    },
+    "axiom-apex": {
+      "version": "3.2.0",
+      "requires": [
+        "axiom-rag>=1.5.0"
+      ]
+    },
+    "axiom-ason": {
+      "version": "0.3.0",
+      "requires": [
+        "axiom-apex>=3.2.0"
+      ]
+    }
+  },
+  "boundary": "Compatibility evidence only. This manifest does not authorize tags, releases, uploads, deployment, or paid services."
+}

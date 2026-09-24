@@ -2,8 +2,7 @@
 # AXIOM local portfolio stack
 
 `axiom-infra` provides the local Docker Compose integration stack and
-cross-repository portfolio validation workflow for AXIOM RAG, APEX, ASON, API,
-and demos.
+cross-repository portfolio validation workflow for the active AXIOM repository ecosystem, plus the canonical local ASON → APEX → RAG executable reference.
 
 ## Repository layout
 
@@ -150,3 +149,11 @@ Remote host access through Desktop Commander Remote MCP is optional infrastructu
 ## Canonical portfolio validation receipt
 
 Run `python portfolio_receipt.py` from this repository to execute the registered local checks across all 13 active AXIOM repositories. Missing private/unavailable CI checkouts are explicit failures by default or explicit coverage limitations only when `--allow-missing` is intentionally selected. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt applies only to the recorded revisions/checks and is not a deployment or external certification.
+
+## Canonical release compatibility set
+
+`release-compatibility.json` records the current core compatibility tuple and publication/dependency order: RAG `1.5.0` → APEX `3.2.0` → ASON `0.3.0`. `python release_compatibility.py` verifies source package metadata and exact cross-package minimums. This gate is compatibility evidence only and never authorizes tags or release publication.
+
+## Executable core-stack reference
+
+With the Compose services running and local validation credentials exported, run `python core_stack.py`. It performs a provider-free RAG HTTP inspection, submits a bounded write/read plan through ASON, verifies the authorization and approved-plan digest persisted by APEX, records exact repository revisions, and emits a SHA-256 evidence digest. The discoverable demo wrapper lives at `axiom-demos/core-stack/run.sh`.
