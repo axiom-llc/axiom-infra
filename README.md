@@ -152,7 +152,7 @@ Run `python portfolio_receipt.py` from this repository to execute the registered
 
 ## Canonical release compatibility set
 
-`release-compatibility.json` records the current core compatibility tuple and publication/dependency order: RAG `1.5.0` → APEX `3.2.0` → ASON `0.3.0`. `python release_compatibility.py` verifies source package metadata and exact cross-package minimums. This gate is compatibility evidence only and never authorizes tags or release publication.
+`release-compatibility.json` records the current core compatibility tuple and publication/dependency order: RAG `1.5.0` → APEX `3.2.0` → ASON `0.3.0`. RAG `1.5.0` is already published; APEX `3.2.0` and ASON `0.3.0` remain unpublished. `python release_compatibility.py` verifies source package metadata and exact cross-package minimums. This gate is compatibility evidence only and never authorizes tags or release publication.
 
 ## Executable core-stack reference
 

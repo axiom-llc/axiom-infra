@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the canonical unreleased AXIOM core compatibility set."""
+"""Validate the canonical AXIOM core compatibility set."""
 from __future__ import annotations
 import argparse, json, tomllib
 from pathlib import Path
