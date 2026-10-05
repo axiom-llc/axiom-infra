@@ -70,13 +70,13 @@ jobs:
           repository: axiom-llc/axiom-ops
           path: axiom-ops
           ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_OPS_DEPLOY_KEY }}
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: axiom-llc/axiom-research
           path: axiom-research
           ref: main
-          fetch-depth: 1
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
