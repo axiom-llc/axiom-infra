@@ -13,6 +13,10 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      PORTFOLIO_OPS_DEPLOY_KEY_AVAILABLE: ${{ secrets.PORTFOLIO_OPS_DEPLOY_KEY != '' }}
+      PORTFOLIO_DIRECTOR_DEPLOY_KEY_AVAILABLE: ${{ secrets.PORTFOLIO_DIRECTOR_DEPLOY_KEY != '' }}
+      PORTFOLIO_HARNESS_DEPLOY_KEY_AVAILABLE: ${{ secrets.PORTFOLIO_HARNESS_DEPLOY_KEY != '' }}
     strategy:
       matrix:
         python-version: ['3.11', '3.12']
@@ -66,10 +70,28 @@ jobs:
           ref: main
           persist-credentials: false
       - uses: actions/checkout@v4
+        if: env.PORTFOLIO_OPS_DEPLOY_KEY_AVAILABLE == 'true'
         with:
           repository: axiom-llc/axiom-ops
           path: axiom-ops
           ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_OPS_DEPLOY_KEY }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: env.PORTFOLIO_DIRECTOR_DEPLOY_KEY_AVAILABLE == 'true'
+        with:
+          repository: axiom-llc/axiom-director
+          path: axiom-director
+          ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_DIRECTOR_DEPLOY_KEY }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: env.PORTFOLIO_HARNESS_DEPLOY_KEY_AVAILABLE == 'true'
+        with:
+          repository: axiom-llc/axiom-harness
+          path: axiom-harness
+          ref: main
+          ssh-key: ${{ secrets.PORTFOLIO_HARNESS_DEPLOY_KEY }}
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
