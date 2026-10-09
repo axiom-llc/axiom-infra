@@ -16,6 +16,12 @@ class ReceiptTests(unittest.TestCase):
         with patch.object(pr,'ROOT',pr.ROOT/'definitely-missing'):
             self.assertEqual(pr.build(['axiom-apex'])['status'],'FAIL')
             r=pr.build(['axiom-apex'],allow_missing=True); self.assertEqual(r['status'],'PASS_WITH_LIMITS'); self.assertEqual(r['repositories']['axiom-apex']['status'],'UNAVAILABLE')
+    def test_wiki_browser_check_is_partial_on_github_actions(self):
+        with patch.dict('os.environ', {'GITHUB_ACTIONS': 'true'}):
+            checks, coverage, limitation = pr.checks_for('axiom-wiki-infinite')
+        self.assertEqual(checks, [])
+        self.assertEqual(coverage, 'partial')
+        self.assertIn('browser regression not run', limitation)
     def test_digest_is_canonical_and_excludes_self(self):
         body={'schema':'axiom-portfolio-validation/receipt-v2','generated_at':1,'coverage':'full','limitation':None,'repositories':{},'status':'PASS'}
         digest=hashlib.sha256(pr.canonical(body)).hexdigest(); body['status']='FAIL'; self.assertNotEqual(digest,hashlib.sha256(pr.canonical(body)).hexdigest())

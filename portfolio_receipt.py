@@ -25,6 +25,8 @@ CHECKS={
  'axiom-wiki-infinite':[['python','-m','unittest','-v','tests/test_browser.py']],
 }
 def checks_for(name):
+    if name=='axiom-wiki-infinite' and os.environ.get('GITHUB_ACTIONS')=='true':
+        return [], 'partial', 'Headless Chromium hangs on the GitHub-hosted runner; browser regression not run'
     if name=='axiom-api' and importlib.util.find_spec('responses') is None:
         return [['python','-m','compileall','-q','api_framework','gemini_client','tests'],['python','-c','from api_framework import APIClient; from gemini_client import GeminiClient']], 'partial', "dev-only dependency 'responses' unavailable; pytest not re-run"
     if name=='axiom-blender' and shutil.which('blender') is None:
