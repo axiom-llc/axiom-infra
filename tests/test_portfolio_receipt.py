@@ -11,7 +11,7 @@ class ReceiptTests(unittest.TestCase):
             r=pr.build(['axiom-apex']); self.assertEqual(r['status'],'PASS_WITH_LIMITS'); self.assertEqual(r['coverage'],'partial'); self.assertIn('outside full validation coverage',r['limitation'])
     def test_component_fallback_marks_portfolio_coverage_partial(self):
         with patch.object(pr,'git',return_value=('abc',[])), patch.object(pr,'checks_for',side_effect=lambda n: ([['true']],'partial','tool unavailable') if n=='axiom-blender' else ([['true']],'full',None)), patch.object(pr,'run',return_value={'command':['true'],'exit_code':0,'stdout_tail':'','stderr_tail':''}):
-            r=pr.build(); self.assertEqual(r['status'],'PASS_WITH_LIMITS'); self.assertEqual(r['coverage'],'partial')
+            r=pr.build(allow_missing=True); self.assertEqual(r['status'],'PASS_WITH_LIMITS'); self.assertEqual(r['coverage'],'partial')
     def test_missing_is_strict_locally_and_limited_when_allowed(self):
         with patch.object(pr,'ROOT',pr.ROOT/'definitely-missing'):
             self.assertEqual(pr.build(['axiom-apex'])['status'],'FAIL')
