@@ -161,7 +161,7 @@ jobs:
         run: |
           docker compose config --quiet
           docker compose up --build --wait apex
-          printf '%s' '{"plan":{"steps":[]}}' | docker compose run --rm -T ason submit -
+          python core_stack.py
       - name: Stop test containers
         if: always() && matrix.python-version == '3.12'
         working-directory: axiom-infra
