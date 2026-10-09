@@ -20,7 +20,10 @@ class PortfolioWorkflowTests(unittest.TestCase):
                 if stripped.startswith('path: '):
                     checkout_paths.add(stripped.removeprefix('path: '))
                     break
-        self.assertEqual(set(pr.ACTIVE) - checkout_paths, {'axiom-director', 'axiom-harness'})
+        self.assertEqual(set(pr.ACTIVE) - checkout_paths, set())
+        self.assertIn("if: env.PORTFOLIO_OPS_DEPLOY_KEY_AVAILABLE == 'true'", text)
+        self.assertIn("if: env.PORTFOLIO_DIRECTOR_DEPLOY_KEY_AVAILABLE == 'true'", text)
+        self.assertIn("if: env.PORTFOLIO_HARNESS_DEPLOY_KEY_AVAILABLE == 'true'", text)
         self.assertEqual(checkout_paths - set(pr.ACTIVE), set())
         self.assertEqual(text.count('persist-credentials: false'), len(checkout_paths))
         self.assertIn('portfolio_receipt.py --allow-missing -o axiom-portfolio-validation.json', text)
