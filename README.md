@@ -1,6 +1,6 @@
-# AXIOM local portfolio stack
+# AXIOM Infrastructure — Platform Integration
 
-`axiom-infra` provides the local Docker Compose integration stack and
+`axiom-infra` integrates AXIOM's advanced AI platform through a Docker Compose stack and
 cross-repository portfolio validation workflow for the active AXIOM repository ecosystem, plus the canonical local ASON → APEX → RAG executable reference.
 
 ## Repository layout
@@ -164,7 +164,7 @@ Remote host access through Desktop Commander Remote MCP is optional infrastructu
 
 ## Canonical portfolio validation receipt
 
-Run `python portfolio_receipt.py` from this repository to execute the registered local checks across the 13 repositories registered in this validator. This is a bounded engineering subset, not the complete current AXIOM repository inventory. Missing private/unavailable CI checkouts are explicit failures by default or explicit coverage limitations only when `--allow-missing` is intentionally selected. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt applies only to the recorded revisions/checks and is not a deployment or external certification.
+Run `python portfolio_receipt.py` from this repository to execute the registered local checks across the 13 repositories registered in this validator. This is a bounded engineering subset, not the complete current AXIOM repository inventory. Missing private/unavailable CI checkouts are explicit failures by default or explicit coverage limitations only when `--allow-missing` is intentionally selected. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt binds validation results to the recorded revisions and checks.
 
 ## Canonical release compatibility set
 
