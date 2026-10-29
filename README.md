@@ -1,4 +1,3 @@
-
 # AXIOM local portfolio stack
 
 `axiom-infra` provides the local Docker Compose integration stack and
@@ -11,6 +10,11 @@ axiom-infra/
 ├── .env.example
 ├── .github/workflows/portfolio.yml
 ├── docker-compose.yml
+├── core_stack.py
+├── portfolio_receipt.py
+├── release_compatibility.py
+├── release-compatibility.json
+├── tests/
 └── README.md
 ```
 
@@ -116,7 +120,11 @@ The workflow checks out:
 * `axiom-apex`;
 * `axiom-ason`;
 * `axiom-api`;
-* `axiom-demos`.
+* `axiom-demos`;
+* `axiom-blender`, `axiom-llc.github.io`, `axiom-research`, and `axiom-wiki-infinite`;
+* private `axiom-ops`, `axiom-director`, and `axiom-harness` only when their configured deploy keys are available.
+
+Private checkouts omitted for lack of access remain explicit coverage limits; a green workflow does not mean those repositories were tested.
 
 It records the exact checked-out revisions, builds matching package wheels,
 installs them together, runs each repository's offline tests in a separate
@@ -131,6 +139,14 @@ checkout-authentication configuration are workflow concerns, not a requirement
 of the local Compose stack.
 
 ## Local validation
+
+Run this repository's standard-library regression suite without starting containers:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+For container integration:
 
 ```bash
 docker compose config --quiet
@@ -148,7 +164,7 @@ Remote host access through Desktop Commander Remote MCP is optional infrastructu
 
 ## Canonical portfolio validation receipt
 
-Run `python portfolio_receipt.py` from this repository to execute the registered local checks across all 13 active AXIOM repositories. Missing private/unavailable CI checkouts are explicit failures by default or explicit coverage limitations only when `--allow-missing` is intentionally selected. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt applies only to the recorded revisions/checks and is not a deployment or external certification.
+Run `python portfolio_receipt.py` from this repository to execute the registered local checks across the 13 repositories registered in this validator. This is a bounded engineering subset, not the complete current AXIOM repository inventory. Missing private/unavailable CI checkouts are explicit failures by default or explicit coverage limitations only when `--allow-missing` is intentionally selected. The JSON receipt records exact Git revisions, clean-tree state, each command result, overall `PASS`, `PASS_WITH_LIMITS`, or `FAIL`, explicit per-repository validation coverage/limitations, and a canonical SHA-256 digest. Use `--repo NAME` to validate a subset and `-o PATH` to persist the receipt. The receipt applies only to the recorded revisions/checks and is not a deployment or external certification.
 
 ## Canonical release compatibility set
 
@@ -157,3 +173,7 @@ Run `python portfolio_receipt.py` from this repository to execute the registered
 ## Executable core-stack reference
 
 With the Compose services running and local validation credentials exported, run `python core_stack.py`. It performs a provider-free RAG HTTP inspection, submits a bounded write/read plan through ASON, verifies the authorization and approved-plan digest persisted by APEX, records exact repository revisions, and emits a SHA-256 evidence digest. The discoverable demo wrapper lives at `axiom-demos/core-stack/run.sh`.
+
+## License
+
+AXIOM-authored software is available under the [MIT License](LICENSE). Dependency licenses remain separate.
