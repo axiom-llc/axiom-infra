@@ -1,0 +1,16 @@
+{
+  "schema": "axiom-native-rsi/v1",
+  "repository": "axiom-llc/axiom-infra",
+  "rules": [
+    {
+      "id": "portfolio-avoid-unneeded-selected-copy",
+      "path": "portfolio_receipt.py",
+      "before": "    names=list(selected) if selected else list(ACTIVE)\n",
+      "after": "    names=selected or ACTIVE\n",
+      "benchmark": "rsi/benchmark.py",
+      "tests": [
+        "rsi/test_native.py"
+      ]
+    }
+  ]
+}
