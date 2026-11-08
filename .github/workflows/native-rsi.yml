@@ -1,0 +1,45 @@
+name: native-rsi
+
+on:
+  push:
+    branches: [main]
+    paths: ['rsi/**', 'portfolio_receipt.py', '.github/workflows/native-rsi.yml']
+  pull_request:
+    branches: [main]
+    paths: ['rsi/**', 'portfolio_receipt.py', '.github/workflows/native-rsi.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Portable existing regressions (full matrix in Portfolio validation)
+        run: python -m unittest -v tests.test_core_stack tests.test_portfolio_workflow
+      - name: Source, candidate, deduplication, and rollback tests
+        run: python -m unittest rsi.test_native -v
+      - name: Generate patch without touching source
+        run: python -m rsi.native --output "$RUNNER_TEMP/candidates.json"
+      - name: Benchmark synthetic isolated portfolio check
+        run: python -m rsi.benchmark --output "$RUNNER_TEMP/benchmark.json"
+      - name: Preserve isolated artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: infra-native-rsi-${{ matrix.python-version }}
+          path: |
+            ${{ runner.temp }}/candidates.json
+            ${{ runner.temp }}/benchmark.json
+          retention-days: 14
+          if-no-files-found: warn
