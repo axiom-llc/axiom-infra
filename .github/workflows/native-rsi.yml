@@ -25,8 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Existing portfolio tests
-        run: python -m unittest discover -s tests -v
+      - name: Portable existing regressions (full matrix in Portfolio validation)
+        run: python -m unittest -v tests.test_core_stack tests.test_portfolio_workflow
       - name: Source, candidate, deduplication, and rollback tests
         run: python -m unittest rsi.test_native -v
       - name: Generate patch without touching source
