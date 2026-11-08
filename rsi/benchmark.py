@@ -11,7 +11,8 @@ from rsi.native import generate
 
 
 def load(source):
-    ns={"__name__":"rsi_infra_receipt"}
+    ns={"__name__":"rsi_infra_receipt",
+        "__file__":str(Path(__file__).resolve().parents[1] / "portfolio_receipt.py")}
     exec(compile(source,"portfolio_receipt.py","exec"),ns)
     return ns
 
